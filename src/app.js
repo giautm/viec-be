@@ -6,10 +6,12 @@ import {
 } from 'graphql-server-koa';
 
 import logger from './logger';
+import schema from './schema';
 
 const app = new Koa();
 
 app.use(logger());
+
 // x-response-time
 app.use(async (ctx, next) => {
   const start = Date.now();

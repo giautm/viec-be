@@ -4,9 +4,14 @@ import koaBody from 'koa-bodyparser';
 import {
   graphqlKoa,
 } from 'graphql-server-koa';
+import {
+  makeExecutableSchema,
+  addMockFunctionsToSchema,
+} from 'graphql-tools';
 
 import logger from './logger';
-import schema from './schema';
+import { Schema } from './schema';
+import Resolvers from './resolvers';
 
 const app = new Koa();
 
@@ -25,25 +30,15 @@ app.use(async (ctx, next) => {
 app.use(koaBody());
 
 const graphqlSettingsPerReq = async (ctx) => {
-
-  const { user } = await getUser(req.header.authorization);
+  const executableSchema = makeExecutableSchema({
+    typeDefs: Schema,
+    resolvers: Resolvers.call(ctx),
+  });
 
   return {
-    graphiql: process.env.NODE_ENV !== 'production',
-    schema,
+    schema: executableSchema,
     context: {
-      user,
-      ctx,
-    },
-    formatError: (error) => {
-      console.log(error.message);
-      console.log(error.locations);
-      console.log(error.stack);
-      return {
-        message: error.message,
-        locations: error.locations,
-        stack: error.stack,
-      };
+      koaContext: ctx,
     },
   };
 };

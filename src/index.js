@@ -3,8 +3,11 @@ import 'babel-polyfill';
 import mongoose from 'mongoose';
 import app from './app';
 
+const DOCKER_DB = process.env.MONGODB_PORT; // This is name of docker and posfix `_PORT`
+const MONGODB_URI = DOCKER_DB
+  ? DOCKER_DB.replace('tcp', 'mongodb') + '/myapp'
+  : process.env.MONGODB_URI;
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 
 function connectDatabase() {
   return new Promise((resolve, reject) => {

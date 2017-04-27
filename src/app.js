@@ -1,6 +1,6 @@
 import Koa from 'koa';
 import KoaRouter from 'koa-router';
-import koaBody from 'koa-bodyparser';
+import bodyParser from 'koa-bodyparser';
 import {
   graphqlKoa,
 } from 'graphql-server-koa';
@@ -21,7 +21,7 @@ const app = new Koa();
 
 app.use(logger());
 app.use(responseTime());
-app.use(koaBody());
+app.use(bodyParser());
 
 const router = new KoaRouter();
 router.post('/graphql', graphqlKoa(graphQL));

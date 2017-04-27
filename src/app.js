@@ -4,53 +4,30 @@ import koaBody from 'koa-bodyparser';
 import {
   graphqlKoa,
 } from 'graphql-server-koa';
-import {
-  makeExecutableSchema,
-  addMockFunctionsToSchema,
-} from 'graphql-tools';
 
 import logger from './logger';
-import { Schema } from './schema';
-import Resolvers from './resolvers';
 
-const app = new Koa();
+import graphQL from './graphql';
 
-app.use(logger());
-
-// x-response-time
-app.use(async (ctx, next) => {
+const responseTime = () => async (ctx, next) => {
   const start = Date.now();
   await next();
   const ms = Date.now() - start;
   ctx.set('X-Response-Time', `${ms}ms`);
   ctx.logger.info(`${ctx.method} ${ctx.url} - ${ms} ms`);
-});
-
-// koaBody is needed just for POST.
-app.use(koaBody());
-
-const graphqlSettingsPerReq = async (ctx) => {
-  const executableSchema = makeExecutableSchema({
-    typeDefs: Schema,
-    resolvers: Resolvers.call(ctx),
-  });
-
-  return {
-    schema: executableSchema,
-    context: {
-      koaContext: ctx,
-    },
-  };
 };
 
+const app = new Koa();
+
+app.use(logger());
+app.use(responseTime());
+app.use(koaBody());
+
 const router = new KoaRouter();
-router.post('/graphql', graphqlKoa(graphqlSettingsPerReq));
-router.get('/graphql', graphqlKoa(graphqlSettingsPerReq));
+router.post('/graphql', graphqlKoa(graphQL));
+router.get('/graphql', graphqlKoa(graphQL));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.on('error', (err, ctx) => {
-  ctx.logger.error(error);
-});
 export default app;

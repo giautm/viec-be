@@ -1,6 +1,12 @@
 // @flow
 import 'babel-polyfill';
+import 'source-map-support/register';
+
 import mongoose from 'mongoose';
+import Raven from 'raven';
+
+Raven.config('https://a993a0483e434eaabad7e9763dd81254:3830047d1df54bc9a53277f27347b25c@sentry.io/156904').install();
+
 import app from './app';
 
 const DOCKER_DB = process.env.MONGODB_PORT; // This is name of docker and posfix `_PORT`
@@ -22,7 +28,17 @@ function connectDatabase() {
 }
 
 (async () => {
-  await connectDatabase();
-  await app.listen(PORT);
-  console.log(`Server started on port ${PORT}`);
+  try {
+    app.on('error', (error, ctx) => {
+      Raven.captureException(error, (err, eventId) => {
+        ctx.logger.error(`Reported error with event ${eventId}\n`, error);
+      });
+    });
+
+    await connectDatabase();
+    await app.listen(PORT);
+    console.log(`Server started on port ${PORT}`);
+  } catch (error) {
+    Raven.captureException(error);
+  }
 })();

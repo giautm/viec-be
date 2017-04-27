@@ -1,5 +1,7 @@
 {
   "presets": [
+    "flow",
     "env"
-  ]
+  ],
+  "sourceMaps": true
 }

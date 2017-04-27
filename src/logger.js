@@ -2,14 +2,14 @@ import winston from 'winston';
 
 export default () => {
   winston.add(winston.transports.File, {
-    name: 'info-file',
-    filename: 'var/log/system-info.log',
-    level: 'info',
-  });
-  winston.add(winston.transports.File, {
     name: 'error-file',
     filename: 'var/log/system-error.log',
     level: 'error',
+  });
+  winston.add(winston.transports.File, {
+    name: 'info-file',
+    filename: 'var/log/system-info.log',
+    level: 'info',
   });
 
   if (process.env.NODE_ENV !== 'production') {

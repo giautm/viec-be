@@ -5,6 +5,7 @@ import 'source-map-support/register';
 import mongoose from 'mongoose';
 import Raven from 'raven';
 
+// Replace with your sentry DSN.
 Raven.config('https://a993a0483e434eaabad7e9763dd81254:3830047d1df54bc9a53277f27347b25c@sentry.io/156904').install();
 
 import app from './app';

@@ -9,3 +9,11 @@ A backend boilerplate with some features:
 - Winston logger
 - Sentry Added
 - Auth0 JWT login (coming soon)
+
+How to start
+
+```
+yarn
+yarn build
+docker-compose up
+```

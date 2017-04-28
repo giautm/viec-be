@@ -4,30 +4,45 @@ import bodyParser from 'koa-bodyparser';
 import {
   graphqlKoa,
 } from 'graphql-server-koa';
+import Raven from 'raven';
 
-import logger from './logger';
+import { logger } from './logger';
+import {
+  graphQLSettings,
+  graphQLSubscriptions,
+} from './graphql';
 
-import graphQL from './graphql';
+const app = new Koa();
 
-const responseTime = () => async (ctx, next) => {
+app.use(async (ctx, next) => {
+  ctx.logger = logger;
+  await next();
+});
+app.use(async (ctx, next) => {
   const start = Date.now();
   await next();
   const ms = Date.now() - start;
   ctx.set('X-Response-Time', `${ms}ms`);
   ctx.logger.info(`${ctx.method} ${ctx.url} - ${ms} ms`);
-};
-
-const app = new Koa();
-
-app.use(logger());
-app.use(responseTime());
+});
 app.use(bodyParser());
 
 const router = new KoaRouter();
-router.post('/graphql', graphqlKoa(graphQL));
-router.get('/graphql', graphqlKoa(graphQL));
+router.post('/graphql', graphqlKoa(graphQLSettings));
+router.get('/graphql', graphqlKoa(graphQLSettings));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+app.on('error', (error, ctx) => {
+  Raven.captureException(error, (err, eventId) => {
+    ctx.logger.error(`Reported error with event ${eventId}\n`, error);
+  });
+});
+
+export const startListen = async (port) => {
+  const server = await app.listen(port);
+  graphQLSubscriptions({ server, path: '/subscriptions' });
+};
 
 export default app;

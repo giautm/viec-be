@@ -16,7 +16,17 @@ type Query {
   ping: String!
 }
 
+type Comment {
+    id: String
+    content: String
+}
+
+type Subscription {
+  commentAdded(repoFullName: String!): Comment
+}
+
 schema {
   query: Query
+  subscription: Subscription
 }
 `;

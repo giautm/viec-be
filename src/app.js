@@ -23,7 +23,8 @@ app.use(async (ctx, next) => {
   await next();
   const ms = Date.now() - start;
   ctx.set('X-Response-Time', `${ms}ms`);
-  ctx.logger.info(`${ctx.method} ${ctx.url} - ${ms} ms`);
+  const { response } = ctx;
+  ctx.logger.info(`${ctx.method} ${ctx.url} ${response.status} ${response.length} - ${ms} ms`);
 });
 app.use(bodyParser());
 

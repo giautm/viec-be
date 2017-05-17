@@ -52,12 +52,14 @@ const initContext = async (authToken) => {
   try {
     const mongodb = await connectDatabase(MONGODB_URI);
     let user = null;
-    try {
-      const payload = jwt.verify(authToken, TOKEN_SECRET);
-      if (payload && payload.sub) {
-        user = await User.findOne({ userId: payload.sub });
+    if (authToken) {
+      try {
+        const payload = jwt.verify(authToken, TOKEN_SECRET);
+        if (payload && payload.sub) {
+          user = await User.findOne({ userId: payload.sub });
+        }
+      } catch(err) {
       }
-    } catch(err) {
     }
     // Do other tasks: Init Dataloader.
 
@@ -73,7 +75,7 @@ const initContext = async (authToken) => {
 
 export const graphQLSettings = async (ctx) => {
   // Extract jwt from request header
-  let [schema, token] = ctx.request.get('auth').split(' ');
+  let [schema, token] = ctx.request.get('Authorization').split(' ');
   if (token && schema.toLowerCase() === 'bearer') {
     token = null;
   }

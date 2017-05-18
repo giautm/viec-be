@@ -1,4 +1,20 @@
-node_modules/
+# OSX
+#
+.DS_Store
+
+# Build
+#
 build/
+
+# node.js
+#
+node_modules/
+npm-debug.log
+
+# Unit test
+#
 coverage/
+
+# Environment configs
+#
 .env

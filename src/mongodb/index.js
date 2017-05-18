@@ -10,7 +10,7 @@ const MONGODB_URI = DOCKER_DB
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', (error) => {
   Raven.captureException(error);
-  console.error(error);
+  console.error('Mongoose: Connection error.', error);
 });
 mongoose.connection.on('open', () => {
   console.log('Mongoose: Connected to database!');
@@ -26,7 +26,7 @@ const connectWithRetry = (retryInterval) => {
   }).catch((error) => {
     Raven.captureException(error);
     // Retry connecting to mongo if initial connect fails
-    console.error(`Mongoose: Failed to connect to mongo on startup - retrying in ${retryInterval} ms`, error);
+    console.error(`Mongoose: Failed to connect to mongo on startup - retrying in ${retryInterval} ms.`, error);
     setTimeout(connectWithRetry, retryInterval, retryInterval);
   });
 };

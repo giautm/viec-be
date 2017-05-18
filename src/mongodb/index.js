@@ -28,12 +28,12 @@ const connectWithRetry = (retryInterval) => {
   }).catch((error) => {
     Raven.captureException(error);
     // Retry connecting to mongo if initial connect fails
-    console.error(`Mongoose: Failed to connect to mongo on startup - retrying in ${retryInterval} ms.`, error);
-    setTimeout(connectWithRetry, retryInterval, retryInterval);
+    console.error(`Mongoose: Failed to connect to mongo on startup - retrying in ${retryInterval} sec(s).`, error);
+    setTimeout(connectWithRetry, retryInterval * 1000, retryInterval);
   });
 };
 
-connectWithRetry(5000);
+connectWithRetry(5);
 
 export const getConnection = () => {
   return Promise.resolve(mongoose.connection);

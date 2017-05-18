@@ -17,14 +17,8 @@ import resolvers from './resolvers';
 import { pubsub } from './pubsub';
 import { logger } from '../logger';
 import {
-  connectDatabase,
   User,
 } from '../mongodb';
-
-const DOCKER_DB = process.env.MONGODB_PORT; // This is name of docker and posfix `_PORT`
-const MONGODB_URI = DOCKER_DB
-  ? DOCKER_DB.replace('tcp', 'mongodb') + '/myapp'
-  : process.env.MONGODB_URI;
 
 const TOKEN_SECRET = process.env.AUTH0_CLIENT_SECRET;
 
@@ -50,7 +44,6 @@ maskErrors(executableSchema, (error) => {
 
 const initContext = async (authToken) => {
   try {
-    const mongodb = await connectDatabase(MONGODB_URI);
     let user = null;
     if (authToken) {
       try {
@@ -64,7 +57,6 @@ const initContext = async (authToken) => {
     // Do other tasks: Init Dataloader.
 
     return {
-      mongodb,
       user,
     };
   } catch(err) {

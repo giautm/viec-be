@@ -1,5 +1,7 @@
 export const Schema = `
 
+scalar DateTime
+
 interface Node {
   id: ID!
 }

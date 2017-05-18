@@ -8,12 +8,14 @@ const MONGODB_URI = DOCKER_DB
 
 // Use native promises
 mongoose.Promise = global.Promise;
-mongoose.connection.on('error', (error) => {
-  Raven.captureException(error);
-  console.error('Mongoose: Connection error.', error);
-});
 mongoose.connection.on('open', () => {
   console.log('Mongoose: Connected to database!');
+}).on('close', () => {
+  Raven.captureMessage('Mongoose: Connection closed!');
+  console.error('Mongoose: Connection closed!');
+}).on('error', (error) => {
+  Raven.captureException(error);
+  console.error('Mongoose: Connection error.', error);
 });
 
 const connectWithRetry = (retryInterval) => {
